@@ -124,10 +124,10 @@ class TestPolicyCompiler:
         assert len(canonical.commitment_hash) == 64  # SHA-256
     
     def test_canonical_form_deterministic(self):
-        """Test that canonical form is deterministic."""
+        """Test that canonical form is deterministic for same policy."""
         compiler = PolicyCompiler()
         
-        # Create two identical policies
+        # Create two statements with different ordering that should normalize to same form
         stmt1 = PolicyStatement(
             sid="stmt-1",
             effect=PolicyEffect.ALLOW,
@@ -142,24 +142,27 @@ class TestPolicyCompiler:
             resources=["bucket/b", "bucket/a"]  # Different order
         )
         
+        # Create same policy twice with same ID
         policy1 = Policy(
-            policy_id="policy-1",
+            policy_id="policy-test",
             version="1.0",
             name="Test",
             statements=[stmt1]
         )
         
+        canonical1 = compiler.compile(policy1)
+        
+        # Compile again with reordered actions/resources
         policy2 = Policy(
-            policy_id="policy-2",
+            policy_id="policy-test",
             version="1.0",
             name="Test",
             statements=[stmt2]
         )
         
-        canonical1 = compiler.compile(policy1)
         canonical2 = compiler.compile(policy2)
         
-        # Canonical forms should be identical (normalized)
+        # Canonical forms should be identical (normalized) when policy content is same
         assert canonical1.canonical_form == canonical2.canonical_form
         assert canonical1.commitment_hash == canonical2.commitment_hash
     
