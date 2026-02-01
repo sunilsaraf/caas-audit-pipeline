@@ -40,7 +40,7 @@ class PolicyCompilerTest {
     void testCanonicalFormDeterministic() {
         PolicyCompiler compiler = new PolicyCompiler();
         
-        // Create two identical policies with different ordering
+        // Create two statements with different ordering that should normalize to same form
         PolicyStatement stmt1 = new PolicyStatement(
             "stmt-1",
             PolicyEffect.ALLOW,
@@ -55,13 +55,14 @@ class PolicyCompilerTest {
             Arrays.asList("bucket/b", "bucket/a") // Different order
         );
         
-        Policy policy1 = new Policy("policy-1", "1.0", "Test", Arrays.asList(stmt1));
-        Policy policy2 = new Policy("policy-2", "1.0", "Test", Arrays.asList(stmt2));
+        // Create same policy twice with same ID
+        Policy policy1 = new Policy("policy-test", "1.0", "Test", Arrays.asList(stmt1));
+        Policy policy2 = new Policy("policy-test", "1.0", "Test", Arrays.asList(stmt2));
         
         CanonicalPolicy canonical1 = compiler.compile(policy1);
         CanonicalPolicy canonical2 = compiler.compile(policy2);
         
-        // Canonical forms should be identical (normalized)
+        // Canonical forms should be identical (normalized) when policy content is same
         assertEquals(canonical1.getCanonicalForm(), canonical2.getCanonicalForm());
         assertEquals(canonical1.getCommitmentHash(), canonical2.getCommitmentHash());
     }
