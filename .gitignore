@@ -37,6 +37,16 @@ env/
 .coverage
 htmlcov/
 
+# Java
+java-implementation/target/
+*.class
+*.jar
+*.war
+*.ear
+.settings/
+.classpath
+.project
+
 # Temporary files
 *.tmp
 .DS_Store
